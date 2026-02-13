@@ -66,7 +66,7 @@ func (tri *TriangleP3) Draw(width float64, height float64, dc *gg.Context, lens 
 		return
 	}
 
-	rg := ra * 0.2
+	rg := ra * phi / 2
 	rr := ra - rg
 
 	dc.Push()
