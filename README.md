@@ -12,8 +12,8 @@ go run .
 📐 How the Graph Logic WorksTo solve the floating-point precision issue ($0.1 + 0.2 \neq 0.3$), the project uses a custom "Point Key" system:Coordinates are rounded and formatted into strings.These strings act as unique identifiers for vertices in a map.This allows the BFS algorithm to "walk" across the tiling and identify large-scale structures regardless of the recursion depth.
 
 
-# Trushe
-![trushe](img/trushe.png)
+# Truchet Tiles
+![trushe](img/tile_truchet.png)
 
 # Penrose P2
 ![p2](img/tile_P2.png)

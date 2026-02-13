@@ -93,7 +93,7 @@ func link(i int, j int, rotate int, lines [][]int, graph map[VerIndex]*Vertex) [
 	return res
 }
 
-func hex_trushe_tiles() {
+func hex_tiles() {
 
 	//Создаем граф
 	//map для хранения графа
@@ -233,6 +233,6 @@ func hex_trushe_tiles() {
 			dc.Pop()
 		}
 	}
-	dc.SavePNG("img/trushe.png")
+	dc.SavePNG("img/tile_truchet.png")
 
 }
