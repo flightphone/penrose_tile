@@ -56,6 +56,11 @@ func (tri *TriangleP2) split() []Shape {
 func (tri *TriangleP2) Draw(width float64, height float64, dc *gg.Context, lens map[int]int, graph map[string]*PenVertex,
 	ra float64) {
 
+	c := tri.R + tri.G
+	if math.Abs(real(c)) > width+2*ra || math.Abs(imag(c)) > height+2*ra {
+		return
+	}
+
 	dc.Push()
 	dc.SetLineWidth(2)
 
@@ -172,5 +177,5 @@ func penrose_P2() {
 		tris = append(tris, tri)
 		A = B
 	}
-	penrose(height, tris, ra, 7, "img/tile_P2.png")
+	penrose(height, tris, ra, 8, "img/tile_P2.png")
 }

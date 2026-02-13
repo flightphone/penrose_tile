@@ -103,8 +103,8 @@ func hex_tiles() {
 	var lines0 [][]int = [][]int{{4, 5}, {0, 1}, {2, 3}}
 	var lines1 [][]int = [][]int{{1, 2}, {4, 5}, {0, 3}}
 
-	var width float64 = 3200.0
-	var height float64 = 3200.0
+	var width float64 = 1200.0
+	var height float64 = 1200.0
 	var r float64 = 80
 	dx := 2.0 * r * math.Cos(math.Pi/6)
 	dy := r + r*math.Sin(math.Pi/6)

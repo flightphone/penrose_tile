@@ -61,6 +61,11 @@ func (tri *TriangleP3) split() []Shape {
 func (tri *TriangleP3) Draw(width float64, height float64, dc *gg.Context, lens map[int]int, graph map[string]*PenVertex,
 	ra float64) {
 
+	c := tri.R + tri.G
+	if math.Abs(real(c)) > width+2*ra || math.Abs(imag(c)) > height+2*ra {
+		return
+	}
+
 	rg := ra * 0.2
 	rr := ra - rg
 
