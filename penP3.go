@@ -97,7 +97,7 @@ func (tri TriangleP3) Draw(width float64, height float64, dc *gg.Context, lens m
 	dc.DrawLine(real(tri.G)+width/2, imag(tri.G)+height/2, real(tri.B)+width/2, imag(tri.B)+height/2)
 	dc.Stroke()
 
-	dc.SetLineWidth(5)
+	dc.SetLineWidth(2)
 
 	//рисуем зеленые дуги
 
@@ -153,7 +153,7 @@ func (tri TriangleP3) getLink() (ia string, ib string) {
 }
 
 func penrose_P3() {
-	var height float64 = 3200
+	var height float64 = 1200
 	var ra float64 = height*math.Sqrt(2) + 1.
 	A := complex(ra, 0)
 	rotator := cmplx.Exp(complex(0, math.Pi/5))
@@ -176,5 +176,5 @@ func penrose_P3() {
 		tris = append(tris, tri)
 		A = B
 	}
-	penrose(height, tris, ra, 10, "img/tile_P3.png")
+	penrose(height, tris, ra, 8, "img/tile_P3.png")
 }
