@@ -10,7 +10,7 @@ import (
 type TriangleP3 struct {
 	R, G, B complex128
 	Type    int
-	RKey    string
+	//RKey    string
 }
 
 /*
@@ -22,15 +22,15 @@ R - красная дуга
 G - зеленая дуга
 B - нет дуги
 */
-func (tri *TriangleP3) split() []Shape {
+func (tri TriangleP3) split() []Shape {
 	if tri.Type == 0 {
 		A := tri.B + (tri.R-tri.B)*complex(phi, 0)
-		return []Shape{&TriangleP3{
+		return []Shape{TriangleP3{
 			R:    tri.G,
 			G:    tri.B,
 			B:    A,
 			Type: 1,
-		}, &TriangleP3{
+		}, TriangleP3{
 			R:    A,
 			G:    tri.R,
 			B:    tri.G,
@@ -39,17 +39,17 @@ func (tri *TriangleP3) split() []Shape {
 	} else {
 		A := (tri.G-tri.R)*complex(phi, 0) + tri.R
 		B := (tri.B-tri.R)*complex(phi, 0) + tri.R
-		return []Shape{&TriangleP3{
+		return []Shape{TriangleP3{
 			R:    tri.G,
 			G:    tri.B,
 			B:    A,
 			Type: 1,
-		}, &TriangleP3{
+		}, TriangleP3{
 			R:    B,
 			G:    tri.B,
 			B:    A,
 			Type: 0,
-		}, &TriangleP3{
+		}, TriangleP3{
 			R:    A,
 			G:    tri.R,
 			B:    B,
@@ -58,7 +58,7 @@ func (tri *TriangleP3) split() []Shape {
 	}
 }
 
-func (tri *TriangleP3) Draw(width float64, height float64, dc *gg.Context, lens map[int]int, graph map[string]*PenVertex,
+func (tri TriangleP3) Draw(width float64, height float64, dc *gg.Context, lens map[int]int, graph map[string]*PenVertex,
 	ra float64) {
 
 	c := tri.R + tri.G
@@ -74,8 +74,9 @@ func (tri *TriangleP3) Draw(width float64, height float64, dc *gg.Context, lens 
 
 	if tri.Type == 1 {
 		//Вычисляем свет
-		num := graph[tri.RKey].index //номер связности
-		nn := lens[num]              //Число элементов связности
+		RKey, _ := tri.getLink()
+		num := graph[RKey].index //номер связности
+		nn := lens[num]          //Число элементов связности
 
 		//H := math.Abs(math.Cos(float64(nn-5)*2027)) * 360 //случайный оттенок
 		H := math.Abs(math.Cos(math.Log(float64(nn)*2027))) * 360 //случайный оттенок
@@ -142,12 +143,12 @@ func (tri *TriangleP3) Draw(width float64, height float64, dc *gg.Context, lens 
 
 }
 
-func (tri *TriangleP3) getLink() (ia string, ib string) {
+func (tri TriangleP3) getLink() (ia string, ib string) {
 	pa := (tri.R + tri.G) * complex(0.5, 0)
 	pb := (tri.R + tri.B) * complex(0.5, 0)
 	ia = getPointKey(pa)
 	ib = getPointKey(pb)
-	tri.RKey = ia
+	//tri.RKey = ia
 	return ia, ib
 }
 
@@ -160,10 +161,10 @@ func penrose_P3() {
 	tris := []Shape{}
 	for i := range 10 {
 		B := A * rotator
-		tri := &TriangleP3{
+		tri := TriangleP3{
 			B:    0 + 0i,
 			Type: 0,
-			RKey: "",
+			//RKey: "",
 		}
 		if i%2 == 0 {
 			tri.R = A
@@ -175,5 +176,5 @@ func penrose_P3() {
 		tris = append(tris, tri)
 		A = B
 	}
-	penrose(height, tris, ra, 8, "img/tile_P3.png")
+	penrose(height, tris, ra, 10, "img/tile_P3.png")
 }
