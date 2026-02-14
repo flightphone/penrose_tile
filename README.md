@@ -51,12 +51,22 @@ To solve the floating-point precision issue ($0.1 + 0.2 \neq 0.3$), the project 
 * These strings act as unique identifiers for vertices in a map.
 * This allows the BFS algorithm to "walk" across the tiling and identify large-scale structures regardless of the recursion depth.
 
+### Deterministic Genealogy Coloring: 
 
-# Truchet Tiles
+Each tile carries a unique DNA-index based on its ancestry. This allows for complex, fractal-like patterns without the need for global graph traversal.
+
+**Truchet Tiles**
 ![trushe](img/tile_truchet.png)
 
-# Penrose P2
+**Penrose P2**
 ![p2](img/tile_P2.png)
 
-# Penrose P3
+**Penrose P3**
 ![p3](img/tile_P3.png)
+
+
+**Penrose P2 Genealogy Coloring**
+![p2](img/tile_P2_gen.png)
+
+**Penrose P3 Genealogy Coloring**
+![p3](img/tile_P3_gen.png)

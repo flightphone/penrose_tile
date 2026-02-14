@@ -8,9 +8,10 @@ import (
 )
 
 type TriangleP2 struct {
-	R, G, B complex128
-	Type    int
-	//RKey    string
+	R, G, B     complex128
+	Type        int
+	index       int
+	graph_color bool
 }
 
 /*
@@ -21,34 +22,44 @@ func (tri TriangleP2) split() []Shape {
 		A := tri.B + (tri.G-tri.B)*complex(phi, 0)
 		B := tri.G + (tri.R-tri.G)*complex(phi, 0)
 		return []Shape{TriangleP2{
-			R:    A,
-			G:    tri.G,
-			B:    B,
-			Type: 1,
+			R:           A,
+			G:           tri.G,
+			B:           B,
+			Type:        1,
+			index:       tri.index * 3,
+			graph_color: tri.graph_color,
 		}, TriangleP2{
-			R:    B,
-			G:    tri.B,
-			B:    A,
-			Type: 0,
+			R:           B,
+			G:           tri.B,
+			B:           A,
+			Type:        0,
+			index:       tri.index*3 + 1,
+			graph_color: tri.graph_color,
 		}, TriangleP2{
-			R:    B,
-			G:    tri.B,
-			B:    tri.R,
-			Type: 0,
+			R:           B,
+			G:           tri.B,
+			B:           tri.R,
+			Type:        0,
+			index:       tri.index*3 + 2,
+			graph_color: tri.graph_color,
 		}}
 	} else {
 		A := tri.G + (tri.B-tri.G)*complex(phi, 0)
 		return []Shape{TriangleP2{
-			R:    tri.R,
-			G:    tri.G,
-			B:    A,
-			Type: 0,
+			R:           tri.R,
+			G:           tri.G,
+			B:           A,
+			Type:        0,
+			index:       tri.index*3 + 1,
+			graph_color: tri.graph_color,
 		},
 			TriangleP2{
-				R:    A,
-				G:    tri.B,
-				B:    tri.R,
-				Type: 1,
+				R:           A,
+				G:           tri.B,
+				B:           tri.R,
+				Type:        1,
+				index:       tri.index * 3,
+				graph_color: tri.graph_color,
 			}}
 	}
 }
@@ -65,12 +76,18 @@ func (tri TriangleP2) Draw(width float64, height float64, dc *gg.Context, lens m
 	dc.SetLineWidth(2)
 
 	if tri.Type == 1 {
-		//Вычисляем свет
-		RKey, _ := tri.getLink()
-		num := graph[RKey].index //номер связности
-		nn := lens[num]          //Число элементов связности
 
-		H := math.Abs(math.Cos(math.Log(float64(nn)*2027))) * 360 //случайный оттенок
+		var H float64
+		if tri.graph_color {
+			RKey, _ := tri.getLink()
+			num := graph[RKey].index                                 //номер связности
+			nn := lens[num]                                          //Число элементов связности
+			H = math.Abs(math.Cos(math.Log(float64(nn)*2027))) * 360 //случайный оттенок
+		} else {
+			nn := tri.index
+			H = math.Abs(math.Cos((float64(nn) * 2027))) * 360 //случайный оттенок
+		}
+
 		dc.SetRGB(HSLToRGB(H, 0.8, 0.5))
 		dc.DrawLine(real(tri.R)+width/2, imag(tri.R)+height/2, real(tri.G)+width/2, imag(tri.G)+height/2)
 		dc.Stroke()
@@ -154,8 +171,8 @@ func (tri TriangleP2) getLink() (ia string, ib string) {
 	return ia, ib
 }
 
-func penrose_P2() {
-	var height float64 = 1200
+func penrose_P2(height float64, n int, filename string, graph_color bool) {
+	//var height float64 = 1200
 	var ra float64 = height*math.Sqrt(2) + 1.
 	A := complex(ra, 0)
 	rotator := cmplx.Exp(complex(0, math.Pi/5))
@@ -164,9 +181,10 @@ func penrose_P2() {
 	for i := range 10 {
 		B := A * rotator
 		tri := TriangleP2{
-			G:    0 + 0i,
-			Type: 0,
-			//RKey: "",
+			G:           0 + 0i,
+			Type:        0,
+			graph_color: graph_color,
+			index:       1,
 		}
 		if i%2 == 0 {
 			tri.R = A
@@ -178,5 +196,5 @@ func penrose_P2() {
 		tris = append(tris, tri)
 		A = B
 	}
-	penrose(height, tris, ra, 8, "img/tile_P2.png")
+	penrose(height, tris, ra, n, filename, graph_color)
 }

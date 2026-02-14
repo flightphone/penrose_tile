@@ -73,7 +73,7 @@ func getPointKey(p complex128) string {
 // tris - init triangles
 // ra - length
 // n - count iteration
-func penrose(h float64, tris []Shape, ra float64, n int, filename string) {
+func penrose(h float64, tris []Shape, ra float64, n int, filename string, graph_color bool) {
 	width := h
 	height := h
 
@@ -82,53 +82,57 @@ func penrose(h float64, tris []Shape, ra float64, n int, filename string) {
 		ra = ra * phi
 	}
 
-	// Строим граф
 	var graph map[string]*PenVertex = make(map[string]*PenVertex)
-	for _, sap := range tris {
-		// Распаковываем интерфейс в конкретный тип
-		//tri, _ := sap.(*TriangleP3)
-		ia, ib := sap.getLink()
-		var va *PenVertex
-		var vb *PenVertex
-		var ok bool
-
-		va, ok = graph[ia]
-		if !ok {
-			va = &PenVertex{isMark: false, index: 0}
-			graph[ia] = va
-		}
-
-		vb, ok = graph[ib]
-		if !ok {
-			vb = &PenVertex{isMark: false, index: 0}
-			graph[ib] = vb
-		}
-
-		va.children = append(va.children, ib)
-		vb.children = append(vb.children, ia)
-	}
-
-	//запускаем BFS по графу для раскраски областей связности
 	var lens map[int]int = make(map[int]int) //Длина области по номеру области
-	num := 0                                 //Номер связности
-	for key, vertex := range graph {
-		if vertex.isMark {
-			continue
-		} else {
-			bfs := []string{key}
-			num += 1 //Увеличивыем номер связной области
 
-			for i := 0; i < len(bfs); i++ {
-				ix := bfs[i]
-				graph[ix].isMark = true
-				graph[ix].index = num
-				for _, val := range graph[ix].children {
-					if !graph[val].isMark {
-						bfs = append(bfs, val)
+	// Строим граф
+	if graph_color {
+		for _, sap := range tris {
+			// Распаковываем интерфейс в конкретный тип
+			//tri, _ := sap.(*TriangleP3)
+			ia, ib := sap.getLink()
+			var va *PenVertex
+			var vb *PenVertex
+			var ok bool
+
+			va, ok = graph[ia]
+			if !ok {
+				va = &PenVertex{isMark: false, index: 0}
+				graph[ia] = va
+			}
+
+			vb, ok = graph[ib]
+			if !ok {
+				vb = &PenVertex{isMark: false, index: 0}
+				graph[ib] = vb
+			}
+
+			va.children = append(va.children, ib)
+			vb.children = append(vb.children, ia)
+		}
+
+		//запускаем BFS по графу для раскраски областей связности
+
+		num := 0 //Номер связности
+		for key, vertex := range graph {
+			if vertex.isMark {
+				continue
+			} else {
+				bfs := []string{key}
+				num += 1 //Увеличивыем номер связной области
+
+				for i := 0; i < len(bfs); i++ {
+					ix := bfs[i]
+					graph[ix].isMark = true
+					graph[ix].index = num
+					for _, val := range graph[ix].children {
+						if !graph[val].isMark {
+							bfs = append(bfs, val)
+						}
 					}
 				}
+				lens[num] = len(bfs) //Сохранили длину
 			}
-			lens[num] = len(bfs) //Сохранили длину
 		}
 	}
 

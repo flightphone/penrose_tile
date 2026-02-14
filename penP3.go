@@ -8,9 +8,10 @@ import (
 )
 
 type TriangleP3 struct {
-	R, G, B complex128
-	Type    int
-	//RKey    string
+	R, G, B     complex128
+	Type        int
+	index       int
+	graph_color bool
 }
 
 /*
@@ -26,34 +27,44 @@ func (tri TriangleP3) split() []Shape {
 	if tri.Type == 0 {
 		A := tri.B + (tri.R-tri.B)*complex(phi, 0)
 		return []Shape{TriangleP3{
-			R:    tri.G,
-			G:    tri.B,
-			B:    A,
-			Type: 1,
+			R:           tri.G,
+			G:           tri.B,
+			B:           A,
+			Type:        1,
+			index:       tri.index*3 + 1,
+			graph_color: tri.graph_color,
 		}, TriangleP3{
-			R:    A,
-			G:    tri.R,
-			B:    tri.G,
-			Type: 0,
+			R:           A,
+			G:           tri.R,
+			B:           tri.G,
+			Type:        0,
+			index:       tri.index * 3,
+			graph_color: tri.graph_color,
 		}}
 	} else {
 		A := (tri.G-tri.R)*complex(phi, 0) + tri.R
 		B := (tri.B-tri.R)*complex(phi, 0) + tri.R
 		return []Shape{TriangleP3{
-			R:    tri.G,
-			G:    tri.B,
-			B:    A,
-			Type: 1,
+			R:           tri.G,
+			G:           tri.B,
+			B:           A,
+			Type:        1,
+			index:       tri.index*3 + 1,
+			graph_color: tri.graph_color,
 		}, TriangleP3{
-			R:    B,
-			G:    tri.B,
-			B:    A,
-			Type: 0,
+			R:           B,
+			G:           tri.B,
+			B:           A,
+			Type:        0,
+			index:       tri.index * 3,
+			graph_color: tri.graph_color,
 		}, TriangleP3{
-			R:    A,
-			G:    tri.R,
-			B:    B,
-			Type: 1,
+			R:           A,
+			G:           tri.R,
+			B:           B,
+			Type:        1,
+			index:       tri.index*3 + 2,
+			graph_color: tri.graph_color,
 		}}
 	}
 }
@@ -73,13 +84,18 @@ func (tri TriangleP3) Draw(width float64, height float64, dc *gg.Context, lens m
 	dc.SetLineWidth(2)
 
 	if tri.Type == 1 {
-		//Вычисляем свет
-		RKey, _ := tri.getLink()
-		num := graph[RKey].index //номер связности
-		nn := lens[num]          //Число элементов связности
+		//Вычисляем цвет
+		var H float64
+		if tri.graph_color {
+			RKey, _ := tri.getLink()
+			num := graph[RKey].index                                 //номер связности
+			nn := lens[num]                                          //Число элементов связности
+			H = math.Abs(math.Cos(math.Log(float64(nn)*2027))) * 360 //случайный оттенок
+		} else {
+			nn := tri.index
+			H = math.Abs(math.Cos((float64(nn) * 2027))) * 360 //случайный оттенок
+		}
 
-		//H := math.Abs(math.Cos(float64(nn-5)*2027)) * 360 //случайный оттенок
-		H := math.Abs(math.Cos(math.Log(float64(nn)*2027))) * 360 //случайный оттенок
 		dc.SetRGB(HSLToRGB(H, 0.8, 0.5))
 		dc.DrawLine(real(tri.R)+width/2, imag(tri.R)+height/2, real(tri.G)+width/2, imag(tri.G)+height/2)
 		dc.Stroke()
@@ -152,8 +168,8 @@ func (tri TriangleP3) getLink() (ia string, ib string) {
 	return ia, ib
 }
 
-func penrose_P3() {
-	var height float64 = 1200
+func penrose_P3(height float64, n int, filename string, graph_color bool) {
+	//var height float64 = 2400
 	var ra float64 = height*math.Sqrt(2) + 1.
 	A := complex(ra, 0)
 	rotator := cmplx.Exp(complex(0, math.Pi/5))
@@ -162,8 +178,10 @@ func penrose_P3() {
 	for i := range 10 {
 		B := A * rotator
 		tri := TriangleP3{
-			B:    0 + 0i,
-			Type: 0,
+			B:           0 + 0i,
+			Type:        0,
+			index:       3,
+			graph_color: graph_color,
 			//RKey: "",
 		}
 		if i%2 == 0 {
@@ -176,5 +194,5 @@ func penrose_P3() {
 		tris = append(tris, tri)
 		A = B
 	}
-	penrose(height, tris, ra, 8, "img/tile_P3.png")
+	penrose(height, tris, ra, n, filename, graph_color)
 }
