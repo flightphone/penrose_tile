@@ -31,14 +31,14 @@ func (tri TriangleP3) split() []Shape {
 			G:           tri.B,
 			B:           A,
 			Type:        1,
-			index:       tri.index*3 + 1,
+			index:       (tri.index*3 + 1) % baseIndex,
 			graph_color: tri.graph_color,
 		}, TriangleP3{
 			R:           A,
 			G:           tri.R,
 			B:           tri.G,
 			Type:        0,
-			index:       tri.index * 3,
+			index:       (tri.index * 3) % baseIndex,
 			graph_color: tri.graph_color,
 		}}
 	} else {
@@ -49,21 +49,21 @@ func (tri TriangleP3) split() []Shape {
 			G:           tri.B,
 			B:           A,
 			Type:        1,
-			index:       tri.index*3 + 1,
+			index:       (tri.index*3 + 1) % baseIndex,
 			graph_color: tri.graph_color,
 		}, TriangleP3{
 			R:           B,
 			G:           tri.B,
 			B:           A,
 			Type:        0,
-			index:       tri.index * 3,
+			index:       (tri.index * 3) % baseIndex,
 			graph_color: tri.graph_color,
 		}, TriangleP3{
 			R:           A,
 			G:           tri.R,
 			B:           B,
 			Type:        1,
-			index:       tri.index*3 + 2,
+			index:       (tri.index*3 + 2) % baseIndex,
 			graph_color: tri.graph_color,
 		}}
 	}
@@ -170,6 +170,7 @@ func (tri TriangleP3) getLink() (ia string, ib string) {
 
 func penrose_P3(height float64, n int, filename string, graph_color bool) {
 	//var height float64 = 2400
+
 	var ra float64 = height*math.Sqrt(2) + 1.
 	A := complex(ra, 0)
 	rotator := cmplx.Exp(complex(0, math.Pi/5))

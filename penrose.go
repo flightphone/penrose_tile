@@ -8,6 +8,7 @@ import (
 )
 
 var phi = (math.Sqrt(5) - 1) / 2
+var baseIndex = 27
 
 type Shape interface {
 	split() []Shape
